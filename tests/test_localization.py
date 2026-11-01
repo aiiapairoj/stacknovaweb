@@ -36,7 +36,7 @@ class SourceStrings(HTMLParser):
 class LocalizationTests(unittest.TestCase):
     def test_every_static_english_text_and_accessibility_label_has_thai(self):
         parser = SourceStrings()
-        parser.feed((ROOT / 'index.html').read_text(encoding='utf-8').split('<script>')[0])
+        parser.feed((ROOT / 'templates/home.html').read_text(encoding='utf-8'))
         catalog = json.loads((ROOT / 'locales/th.json').read_text(encoding='utf-8'))
         untranslated_names = {'stacknova', 'Forma Living', 'Slow Days Coffee', 'Shopify', 'LINE', 'EN', 'you@company.com'}
         missing = sorted(value for value in parser.strings if re.search('[A-Za-z]', value) and value not in untranslated_names and value not in catalog)
@@ -49,6 +49,14 @@ class LocalizationTests(unittest.TestCase):
                 self.assertIsInstance(value, str)
                 self.assertTrue(value.strip())
                 self.assertEqual(set(re.findall(r'\{[a-zA-Z]+\}', key)), set(re.findall(r'\{[a-zA-Z]+\}', value)))
+
+    def test_github_pages_entry_is_the_built_bilingual_page(self):
+        published_entry = (ROOT / 'index.html').read_text(encoding='utf-8')
+        built_page = (ROOT / 'views/home.html').read_text(encoding='utf-8')
+        self.assertEqual(published_entry, built_page)
+        self.assertIn('assets/i18n.js', published_entry)
+        self.assertNotIn('cdn.tailwindcss.com', published_entry)
+        self.assertNotIn('<script>', published_entry)
 
     def test_built_page_loads_translation_before_app_without_inline_script(self):
         page = (ROOT / 'views/home.html').read_text(encoding='utf-8')

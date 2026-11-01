@@ -13,8 +13,9 @@ PHP application with a SQLite database, preserving the original responsive desig
 
 ## Responsibilities
 
-- `index.html`: original design/markup source. Its historical inline script is not executed by the deployed page. Do not open this source file as the application.
-- `tools/build_view.py`: generates `views/home.html` and `assets/theme.css`, excluding the original inline script and Tailwind CDN.
+- `templates/home.html`: maintained design/markup source. Edit this template, not the generated entry pages.
+- `index.html`: built static entry for GitHub Pages; language switching works, but Pages cannot run the PHP API or database.
+- `tools/build_view.py`: generates identical `index.html` and `views/home.html`, plus local theme/translation assets, without the Tailwind CDN or obsolete inline script.
 - `assets/app.js`: maintained client application, talking only to same-origin APIs.
 - `index.php`: page controller and security headers.
 - `api.php`: routing, request validation and error boundary.
@@ -29,7 +30,7 @@ Use the `ไทย / EN` control in the header to switch all page copy, dialogs,
 
 Thai copy is maintained in `locales/th.json`. Build validates interpolation placeholders and generates `assets/translations.js`; `assets/i18n.js` binds translated text without inserting HTML. Names, contact values and user messages are never translated. The automated guide recognises Thai keywords and its fixed responses are displayed in the selected language; saved user messages remain verbatim. Money formatting follows the selected locale, and history dates use Bangkok time (Thai locale uses the Buddhist calendar). No account records, prices or database schema are changed by switching language.
 
-After changing markup or translations, run `npm run build`. Language tests cover catalog completeness, preference persistence, invalid locales, storage failure, form state, XSS and responsive layouts from 320px upward.
+After changing `templates/home.html` or translations, run `npm run build` and publish both generated entry pages and assets. GitHub Pages serves the root `index.html`; it does not use PHP's `views/home.html`. On Pages the frontend and language switch can be previewed, but real accounts, saved estimates and chat require the PHP host described below. Language tests cover catalog completeness, preference persistence, invalid locales, storage failure, form state, XSS and responsive layouts from 320px upward.
 
 ## Build
 

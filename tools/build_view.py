@@ -4,7 +4,7 @@ import json
 import re
 
 root = Path(__file__).resolve().parent.parent
-source = (root / 'index.html').read_text(encoding='utf-8')
+source = (root / 'templates' / 'home.html').read_text(encoding='utf-8')
 styles = re.search(r'<style>(.*?)</style>', source, re.S).group(1)
 (root / 'assets').mkdir(exist_ok=True)
 (root / 'views').mkdir(exist_ok=True)
@@ -13,7 +13,9 @@ view = re.sub(r'<style>.*?</style>', '<link rel="stylesheet" href="assets/utilit
 view = view.replace('<script src="https://cdn.tailwindcss.com"></script>', '')
 view = view.replace('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css', 'assets/icons.css')
 scripts = '\n'.join(f'<script src="assets/{name}.js" defer></script>' for name in ['translations', 'i18n', 'app'])
-view = re.sub(r'<script>.*?</script>', scripts, view, flags=re.S)
+if source.count('<!-- APP_SCRIPTS -->') != 1:
+    raise ValueError('The template must contain exactly one application script marker.')
+view = view.replace('<!-- APP_SCRIPTS -->', scripts)
 translations = json.loads((root / 'locales' / 'th.json').read_text(encoding='utf-8'))
 if not isinstance(translations, dict) or not all(isinstance(key, str) and isinstance(value, str) for key, value in translations.items()):
     raise ValueError('Translations must map strings to strings.')
@@ -25,4 +27,5 @@ for key, value in translations.items():
     encoding='utf-8'
 )
 (root / 'views' / 'home.html').write_text(view, encoding='utf-8')
-print('Built views/home.html and assets/theme.css; application JS is maintained separately.')
+(root / 'index.html').write_text(view, encoding='utf-8')
+print('Built identical index.html and views/home.html with local assets and bilingual scripts.')
