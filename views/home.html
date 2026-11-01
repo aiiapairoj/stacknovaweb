@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/icons.css">
 
 <link rel="stylesheet" href="assets/utilities.css">
@@ -21,7 +21,7 @@
 <div class="wrap flex items-center justify-between h-[88px] gap-6">
 <a href="#" aria-label="StackNova home" class="brand text-[27px] font-semibold tracking-[-1px]">stacknova<span style="color:var(--coral)">.</span></a>
 <nav class="desktop-nav flex items-center gap-8 text-[12px] font-semibold" aria-label="Main navigation"><a href="#services">What we do</a><a href="#work">Our work</a><a href="#process">How we work</a><a href="#about">About us</a></nav>
-<div class="flex items-center gap-5"><button data-modal="auth" class="nav-login text-xs font-semibold">Log in <i class="bi bi-arrow-up-right ml-1" aria-hidden="true"></i></button><button data-modal="estimate" class="btn hidden sm:inline-flex">Let's talk <i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></div>
+<div class="header-actions flex items-center gap-5"><div class="language-switch" role="group" aria-label="Choose language" data-language-ignore><button type="button" data-language="th" lang="th" aria-pressed="false">ไทย</button><button type="button" data-language="en" lang="en" aria-pressed="true">EN</button></div><button data-modal="auth" class="nav-login text-xs font-semibold">Log in <i class="bi bi-arrow-up-right ml-1" aria-hidden="true"></i></button><button data-modal="estimate" class="btn hidden sm:inline-flex">Let's talk <i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></div>
 </div>
 </header>
 <main id="main">
@@ -75,6 +75,8 @@
 <dialog id="projectDialog" aria-labelledby="projectTitle"><button class="close" data-close aria-label="Close project">×</button><div class="eyebrow">Portfolio concept</div><h2 id="projectTitle"></h2><p id="projectDescription" class="muted text-sm"></p><div class="status">Illustrative concept, not a completed client engagement. Images are stock photography. No performance results are claimed.</div><button data-modal="estimate" class="btn coral mt-5">Plan a similar project <i class="bi bi-arrow-up-right" aria-hidden="true"></i></button></dialog>
 <dialog id="privacyDialog" aria-labelledby="privacyTitle"><button class="close" data-close aria-label="Close information">×</button><h2 id="privacyTitle">Your data, clearly.</h2><p class="muted text-xs">Controller: <span id="privacyController">Not configured</span>. Contact: <span id="privacyContact">Not configured</span>. We process your name, email, salted password hash, estimates and chat to provide the account and requested services (contract/pre-contract steps). Required session cookies and short-lived hashed network identifiers support security and abuse prevention (legitimate interests). No analytics or marketing cookies are installed.</p><p class="muted text-xs">Accounts and their estimates/chat are removed after 365 days without a successful login; guest data after 30 days. Active sessions expire after 30 minutes idle or 12 hours total. Security rate-limit records expire after 10 minutes. Scheduled maintenance enforces deletion. You can delete your account immediately after confirming your password. Without the required details an account cannot be created; guest estimates remain available.</p><p class="muted text-xs">Google Fonts and Unsplash receive requests to load fonts and photos. Application scripts, styles and icons are served locally. Those requests disclose normal connection information to their providers.</p><p class="muted text-xs">You may request access, correction, erasure, restriction, portability, objection, and withdrawal of any separately given consent through the controller contact, and complain to Thailand’s PDPC. No marketing consent is requested here. The hosting operator processes application data; overseas font/image providers receive connection data under their own policies. The business must confirm hosting locations, transfer safeguards, controller details and this notice before public launch. Backups may retain deleted data for up to the operator’s documented backup period. The chat is an automated guide, not generative AI or a live human.</p></dialog>
 <dialog id="contactDialog" aria-labelledby="contactTitle"><button class="close" data-close aria-label="Close contact information">×</button><h2 id="contactTitle">Let's connect.</h2><p id="contactMessage" class="muted text-sm"></p><button id="contactGuide" class="btn coral mt-4">Ask the studio guide <i class="bi bi-chat-dots" aria-hidden="true"></i></button></dialog>
+<script src="assets/translations.js" defer></script>
+<script src="assets/i18n.js" defer></script>
 <script src="assets/app.js" defer></script>
 </body>
 </html>

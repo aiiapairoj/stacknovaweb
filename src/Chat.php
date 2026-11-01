@@ -14,10 +14,10 @@ final class Chat
     {
         $text = strtolower($message);
         foreach ([
-            ['price', 'cost', 'budget', 'estimate', 'baht'],
-            ['time', 'long', 'week', 'deadline'],
-            ['cms', 'update', 'content'],
-            ['where', 'location', 'bangkok', 'remote'],
+            ['price', 'cost', 'budget', 'estimate', 'baht', 'ราคา', 'ค่าใช้จ่าย', 'งบ', 'ประเมิน', 'บาท'],
+            ['time', 'long', 'week', 'deadline', 'ระยะเวลา', 'นาน', 'สัปดาห์', 'กำหนดส่ง'],
+            ['cms', 'update', 'content', 'แก้ไข', 'เนื้อหา', 'อัปเดต', 'จัดการข้อมูล'],
+            ['where', 'location', 'bangkok', 'remote', 'ที่ไหน', 'ที่ตั้ง', 'กรุงเทพ', 'ออนไลน์'],
         ] as $group => $words) {
             foreach ($words as $word) {
                 if (str_contains($text, $word)) {

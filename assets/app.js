@@ -1,4 +1,6 @@
 'use strict';
+
+const I18n = window.StackNovaI18n;
 // Verified contact values come from server configuration.
 let CONTACT = { line: '', phone: '' };
 let state = { csrf: '', user: null };
@@ -40,12 +42,12 @@ async function withForm(form, status, work) {
     const buttons = form.querySelectorAll('button');
     buttons.forEach((button) => { button.disabled = true; });
     status.hidden = false;
-    status.textContent = 'Working…';
+    I18n.text(status, 'Working…');
     try {
         await ready;
         await work();
     } catch (error) {
-        status.textContent = error.message;
+        I18n.text(status, error.message);
     } finally {
         buttons.forEach((button) => { button.disabled = false; });
     }
@@ -78,7 +80,7 @@ document.querySelectorAll('[data-project]').forEach((button) => {
     button.addEventListener('click', () => {
         const project = projects[Number(button.dataset.project)];
         $('#projectTitle').textContent = project[0];
-        $('#projectDescription').textContent = project[1];
+        I18n.text($('#projectDescription'), project[1]);
         openDialog($('#projectDialog'));
     });
 });
@@ -109,7 +111,7 @@ $('#serviceType').addEventListener('change', () => {
         $('#cms').checked = false;
     }
 });
-const formatMoney = (satang) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(satang / 100);
+const formatMoney = (satang) => new Intl.NumberFormat(I18n.locale, { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(satang / 100);
 $('#estimateForm').addEventListener('submit', (event) => {
     event.preventDefault();
     void withForm(event.currentTarget, $('#estimateResult'), async () => {
@@ -119,13 +121,19 @@ $('#estimateForm').addEventListener('submit', (event) => {
             cms: $('#cms').checked && $('#serviceType').value !== 'brand'
         });
         const item = result.estimate;
-        $('#estimateResult').textContent = `Saved: ${formatMoney(item.low_satang)}–${formatMoney(item.high_satang)}. Reference ${item.id}. Excludes VAT and third-party fees. ${state.user ? 'Available in your account history.' : 'Sign up or log in during this session to keep it in your account.'}`;
+        const note = state.user ? 'Available in your account history.' : 'Sign up or log in during this session to keep it in your account.';
+        I18n.text($('#estimateResult'), 'Saved: {low}–{high}. Reference {id}. Excludes VAT and third-party fees. {note}', {
+            low: () => formatMoney(item.low_satang),
+            high: () => formatMoney(item.high_satang),
+            id: item.id,
+            note: () => I18n.t(note)
+        });
     });
 });
 let registerMode = false;
 function setAuthMode(register) {
     registerMode = register;
-    $('#authTitle').textContent = register ? 'A fresh start.' : 'Welcome back.';
+    I18n.text($('#authTitle'), register ? 'A fresh start.' : 'Welcome back.');
     $('#nameField').hidden = !register;
     $('#accountName').required = register;
     $('#loginTab').setAttribute('aria-pressed', String(!register));
@@ -150,13 +158,13 @@ $('#authForm').addEventListener('submit', (event) => {
         $('#accountPassword').value = '';
         applySession(result);
         await loadChat();
-        $('#authStatus').textContent = registerMode ? 'Account created. You are securely signed in.' : 'You are signed in.';
+        I18n.text($('#authStatus'), registerMode ? 'Account created. You are securely signed in.' : 'You are signed in.');
     });
 });
 function setChat(open) {
     $('#chatPanel').hidden = !open;
     $('#chatToggle').setAttribute('aria-expanded', String(open));
-    $('#chatToggle').setAttribute('aria-label', open ? 'Close studio assistant' : 'Open studio assistant');
+    I18n.attribute($('#chatToggle'), 'aria-label', open ? 'Close studio assistant' : 'Open studio assistant');
     if (open) {
         $('#chatInput').focus();
     }
@@ -172,7 +180,11 @@ $('#closeChat').addEventListener('click', () => {
 function addMessage(text, user) {
     const item = document.createElement('div');
     item.className = user ? 'message user' : 'message';
-    item.textContent = text;
+    if (user) {
+        item.textContent = text;
+    } else {
+        I18n.text(item, text);
+    }
     const messages = $('#messages');
     messages.appendChild(item);
     while (messages.children.length > 80) {
@@ -204,7 +216,7 @@ $('#chatForm').addEventListener('submit', (event) => {
     void sendMessage($('#chatInput').value);
 });
 document.querySelectorAll('[data-chat]').forEach((button) => {
-    button.addEventListener('click', () => { void sendMessage(button.dataset.chat); });
+    button.addEventListener('click', () => { void sendMessage(I18n.t(button.dataset.chat)); });
 });
 $('#chatPanel').addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -222,7 +234,9 @@ function contact(channel) {
         window.location.href = 'tel:' + value.replace(/[ -]/g, '');
         return;
     }
-    $('#contactMessage').textContent = `The ${channel === 'line' ? 'LINE account' : 'phone number'} has not been configured. No contact request has been sent. Please try another available business contact.`;
+    I18n.text($('#contactMessage'), 'The {channel} has not been configured. No contact request has been sent. Please try another available business contact.', {
+        channel: () => I18n.t(channel === 'line' ? 'LINE account' : 'phone number')
+    });
     openDialog($('#contactDialog'));
 }
 document.querySelectorAll('[data-contact]').forEach((button) => {
@@ -240,9 +254,10 @@ const reviews = [
 let reviewIndex = 0;
 function showReview(direction) {
     reviewIndex = (reviewIndex + direction + reviews.length) % reviews.length;
-    $('#reviewText').textContent = reviews[reviewIndex][0];
+    I18n.text($('#reviewText'), reviews[reviewIndex][0]);
     $('#reviewName').textContent = reviews[reviewIndex][1];
-    $('#reviewRole').textContent = reviews[reviewIndex][2] + ' · Example testimonial';
+    const role = reviews[reviewIndex][2];
+    I18n.text($('#reviewRole'), '{role} · Example testimonial', { role: () => I18n.t(role) });
     $('#reviewCount').textContent = `0${reviewIndex + 1} / 03`;
 }
 $('#prevReview').addEventListener('click', () => showReview(-1));
@@ -260,26 +275,35 @@ function applySession(result) {
     state = { csrf: result.csrf, user: result.user };
     if (result.contact) {
         CONTACT = result.contact;
-        $('#privacyController').textContent = result.contact.controller;
-        $('#privacyContact').textContent = result.contact.email || 'Contact not configured';
+        const controller = result.contact.controller;
+        I18n.text($('#privacyController'), '{name}', {
+            name: () => controller === 'Not configured' ? I18n.t(controller) : controller
+        });
+        I18n.text($('#privacyContact'), '{contact}', {
+            contact: () => result.contact.email || I18n.t('Contact not configured')
+        });
     }
     const signedIn = Boolean(state.user);
     $('#authForm').hidden = signedIn;
     $('#signedInPanel').hidden = !signedIn;
     $('#loginTab').hidden = signedIn;
     $('#registerTab').hidden = signedIn;
-    $('.nav-login').textContent = signedIn ? 'My account' : 'Log in';
-    $('#accountSummary').textContent = signedIn ? `Signed in as ${state.user.display_name}. Your estimates and chat are private to this account.` : 'Secure account access. Passwords are hashed, never stored as plain text.';
+    I18n.text($('.nav-login'), signedIn ? 'My account' : 'Log in');
+    if (signedIn) {
+        I18n.text($('#accountSummary'), 'Signed in as {name}. Your estimates and chat are private to this account.', { name: state.user.display_name });
+    } else {
+        I18n.text($('#accountSummary'), 'Secure account access. Passwords are hashed, never stored as plain text.');
+    }
     if (changed) {
-        $('#messages').replaceChildren();
-        $('#historyList').replaceChildren();
-        $('#estimateResult').textContent = '';
+        I18n.clear($('#messages'));
+        I18n.clear($('#historyList'));
+        I18n.clear($('#estimateResult'));
         $('#estimateResult').hidden = true;
     }
 }
 async function loadChat() {
     const result = await api('chat');
-    $('#messages').replaceChildren();
+    I18n.clear($('#messages'));
     if (result.messages.length === 0) {
         addMessage('Hello! Ask about pricing, timelines or content management. Messages are saved to your private session or account. Please avoid sensitive information.', false);
     }
@@ -288,13 +312,20 @@ async function loadChat() {
 $('#historyButton').addEventListener('click', () => {
     void withForm($('#signedInPanel'), $('#historyList'), async () => {
         const result = await api('estimates');
-        $('#historyList').replaceChildren();
+        I18n.clear($('#historyList'));
         if (result.estimates.length === 0) {
-            $('#historyList').textContent = 'No estimates yet. Start with the free estimator.';
+            I18n.text($('#historyList'), 'No estimates yet. Start with the free estimator.');
         }
         result.estimates.forEach((item) => {
             const row = document.createElement('p');
-            row.textContent = `${item.service} · ${formatMoney(item.low_satang)}–${formatMoney(item.high_satang)} · ${new Date(item.created_at * 1000).toLocaleDateString('en-GB')}`;
+            I18n.text(row, '{service} · {low}–{high} · {date}', {
+                service: () => I18n.t(item.service),
+                low: () => formatMoney(item.low_satang),
+                high: () => formatMoney(item.high_satang),
+                date: () => new Intl.DateTimeFormat(I18n.locale, {
+                    day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok'
+                }).format(new Date(item.created_at * 1000))
+            });
             $('#historyList').appendChild(row);
         });
     });
@@ -302,7 +333,7 @@ $('#historyButton').addEventListener('click', () => {
 $('#logoutButton').addEventListener('click', () => {
     void withForm($('#signedInPanel'), $('#authStatus'), async () => {
         applySession(await api('logout', {}));
-        $('#authStatus').textContent = 'You have been logged out.';
+        I18n.text($('#authStatus'), 'You have been logged out.');
         await loadChat();
     });
 });
@@ -312,16 +343,20 @@ $('#deleteForm').addEventListener('submit', (event) => {
         const result = await api('account/delete', { password: $('#deletePassword').value });
         $('#deletePassword').value = '';
         applySession(result);
-        $('#authStatus').textContent = 'Your account and associated data have been permanently deleted.';
+        I18n.text($('#authStatus'), 'Your account and associated data have been permanently deleted.');
         await loadChat();
     });
 });
 setAuthMode(false);
+showReview(0);
 ready = api('session').then(async (result) => {
     applySession(result);
     await loadChat();
 });
 ready.catch((error) => {
-    $('#accountSummary').textContent = error.message + ' Reload this page to reconnect.';
-    addMessage(error.message + ' Reload this page to reconnect.', false);
+    I18n.text($('#accountSummary'), '{message} {retry}', {
+        message: () => I18n.t(error.message),
+        retry: () => I18n.t('Reload this page to reconnect.')
+    });
+    addMessage(error.message, false);
 });

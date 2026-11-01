@@ -23,6 +23,14 @@ PHP application with a SQLite database, preserving the original responsive desig
 - `migrations/`: ordered, forward-only schema migrations.
 - `storage/`: private local runtime state, not a deployment asset.
 
+## Thai / English
+
+Use the `ไทย / EN` control in the header to switch all page copy, dialogs, application statuses, accessibility labels and the automated guide. The existing English default is preserved; the selected language is remembered in `localStorage` under `stacknova.language`. Only `en` and `th` are accepted; the switch still works when browser storage is blocked.
+
+Thai copy is maintained in `locales/th.json`. Build validates interpolation placeholders and generates `assets/translations.js`; `assets/i18n.js` binds translated text without inserting HTML. Names, contact values and user messages are never translated. The automated guide recognises Thai keywords and its fixed responses are displayed in the selected language; saved user messages remain verbatim. Money formatting follows the selected locale, and history dates use Bangkok time (Thai locale uses the Buddhist calendar). No account records, prices or database schema are changed by switching language.
+
+After changing markup or translations, run `npm run build`. Language tests cover catalog completeness, preference persistence, invalid locales, storage failure, form state, XSS and responsive layouts from 320px upward.
+
 ## Build
 
 Requires Node/npm and Python for the development build only. PHP serves the compiled assets without Node or Python.

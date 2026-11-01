@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "python tools/build_view.py && tailwindcss -i assets/tailwind.css -o assets/utilities.css --minify",
-    "check:js": "node --check assets/app.js",
+    "check:js": "node --check assets/app.js && node --check assets/i18n.js && node --check assets/translations.js",
     "test": "python -m unittest discover -s tests -v",
     "test:browser": "playwright test"
   },
