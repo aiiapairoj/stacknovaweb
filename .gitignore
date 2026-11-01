@@ -1,0 +1,8 @@
+/node_modules/
+/storage/
+/config.local.php
+/test-results/
+/playwright-report/
+/tests/__pycache__/
+.env
+.env.*

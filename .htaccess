@@ -1,0 +1,20 @@
+Options -Indexes -MultiViews
+ServerSignature Off
+DirectoryIndex index.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:src|storage|migrations|tests|tools|views|node_modules)(?:/|$) - [F,END,NC]
+    RewriteRule ^(?:\.|config|package|README|DEPLOY|SECURITY|StackNova) - [F,END,NC]
+    RewriteRule ^index\.html$ - [F,END,NC]
+    RewriteRule ^assets/[A-Za-z0-9_.-]+\.(?:css|js|woff2?)$ - [END]
+    RewriteRule ^api/ api.php [END]
+    RewriteRule ^$ index.php [END]
+    RewriteRule ^index\.php$ - [END]
+    RewriteRule ^ - [F,END]
+</IfModule>
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
+<FilesMatch "\.(?:sqlite|sql|log|ini|env|md|json|lock)$">
+    Require all denied
+</FilesMatch>

@@ -1,0 +1,15 @@
+{
+  "name": "stacknova",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "python tools/build_view.py && tailwindcss -i assets/tailwind.css -o assets/utilities.css --minify",
+    "check:js": "node --check assets/app.js",
+    "test": "python -m unittest discover -s tests -v",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "tailwindcss": "3.4.19"
+  }
+}
